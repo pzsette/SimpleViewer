@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox, QMainWindow, QLabel, QSize
 
 
 class ImageViewer (QMainWindow):
+
     def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow()
@@ -17,29 +18,45 @@ class ImageViewer (QMainWindow):
         self.info_box_is_visible = False
         self.ui.info_box.setVisible(self.info_box_is_visible)
         self.ui.left_rotate.clicked.connect(self.left_rotate_button_clicked)
-        self.ui.load_image.clicked.connect(self.open)
+        self.ui.right_rotate.clicked.connect(self.right_rotate_button_clicked)
+        self.ui.zoom_in.clicked.connect(self.zoom_in_button_clicked)
+        self.ui.zoom_out.clicked.connect(self.zoom_out_button_clicked)
         self.ui.show_info.clicked.connect(self.show_info_box)
-        self.ui.image_box.setStyleSheet('background-color: cyan')
-
-
+        self.ui.load_image.clicked.connect(self.open)
+        self.ui.image_box.setStyleSheet('background-color: #202020')
 
     def left_rotate_button_clicked(self):
         print("Left rotation")
+
+    def right_rotate_button_clicked(self):
+        print("Right rotation")
+
+    def zoom_in_button_clicked(self):
+        print("Zoom in")
+
+    def zoom_out_button_clicked(self):
+        print("Zoom out")
+
+    def geo_info_button_clicked(self):
+        print("Geo info")
 
     def show_info_box(self):
         print("enable")
         self.info_box_is_visible = not self.info_box_is_visible
         self.ui.info_box.setVisible(self.info_box_is_visible)
+        self.update_view()
         print(self.info_box_is_visible)
 
     def resizeEvent(self, a0: QtGui.QResizeEvent):
         self.update_view()
 
     def update_view(self):
-        if self.pixmap is not None:
+        if self.pixmap is not None:#
             self.pixmap = QPixmap(self.filename)
-            width = max(500, self.ui.image_box.width())
-            height = max(300, self.ui.image_box.height())
+            #width = max(500, self.ui.image_box.width())
+            #height = max(300, self.ui.image_box.height())
+            width = self.ui.image_box.width()
+            height = self.ui.image_box.height()
             self.ui.image_box.setPixmap(
                 self.pixmap.scaled(QSize(width, height), Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
