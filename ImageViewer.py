@@ -1,10 +1,9 @@
 import PyQt5
-from PyQt5 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QPixmap, QTransform
-
-from mainwindow import Ui_MainWindow
+from PyQt5.QtGui import QPixmap, QTransform, QPalette
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QMainWindow
+from mainwindow import Ui_MainWindow
 
 
 class ImageViewer (QMainWindow):
@@ -24,28 +23,30 @@ class ImageViewer (QMainWindow):
         self.ui.zoom_out.clicked.connect(self.zoom_out_button_clicked)
         self.ui.show_info.clicked.connect(self.show_info_box)
         self.ui.load_image.clicked.connect(self.open)
-        self.ui.image_box.setStyleSheet('background-color: #202020')
+        self.ui.scrollArea.setBackgroundRole(QPalette.Dark)
+        self.image_box = QtWidgets.QLabel()
+        self.image_box.setAlignment(Qt.AlignCenter)
+        self.ui.scrollArea.setWidget(self.image_box)
+        self.ui.scrollArea.setVisible(True)
+
+        #self.ui.image_box.setStyleSheet('background-color: #202020')
 
     def left_rotate_button_clicked(self):
-        print("Left rotation")
         transform = QTransform().rotate(-90)
         self.pixmap = self.pixmap.transformed(transform, Qt.SmoothTransformation)
         self.update_view()
 
     def right_rotate_button_clicked(self):
-        print("Right rotation")
         transform = QTransform().rotate(90)
         self.pixmap = self.pixmap.transformed(transform, Qt.SmoothTransformation)
         self.update_view()
 
     def zoom_in_button_clicked(self):
-        print("Zoom in")
         if self.zoom_ratio+0.5 <= 5:
             self.zoom_ratio += 0.5
             self.update_view()
 
     def zoom_out_button_clicked(self):
-        print("Zoom out")
         if self.zoom_ratio-0.5 >= 1:
             self.zoom_ratio -= 0.5
             self.update_view()
@@ -54,33 +55,26 @@ class ImageViewer (QMainWindow):
         print("Geo info")
 
     def show_info_box(self):
-        print("enable")
         self.info_box_is_visible = not self.info_box_is_visible
         self.ui.info_box.setVisible(self.info_box_is_visible)
         self.update_view()
-        print(self.info_box_is_visible)
 
     def resizeEvent(self, a0: QtGui.QResizeEvent):
         self.update_view()
 
     def update_view(self):
         if self.pixmap is not None:
-            #if self.zoom_ratio is 1:
-            size = QSize(self.ui.image_box.width()*self.zoom_ratio, self.ui.image_box.height()*self.zoom_ratio)
-            #else:
-                #size = self.pixmap.size() * self.zoom_ratio
-            print("Scaled to: "+str(self.zoom_ratio))
-            self.ui.image_box.setPixmap(
+            size = QSize(self.ui.scrollArea.width()*self.zoom_ratio-3, self.ui.scrollArea.height()*self.zoom_ratio-3)
+            self.image_box.setPixmap(
                 self.pixmap.scaled(size, Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
     def open(self):
         options = QFileDialog.Options()
-        # fileName = QFileDialog.getOpenFileName(self, "Open File", QDir.currentPath())
         self.filename, _ = QFileDialog.getOpenFileName(self, 'QFileDialog.getOpenFileName()', '',
                                                   'Images (*.png *.jpeg *.jpg *.bmp *.gif)', options=options)
         self.pixmap = QPixmap(self.filename)
         width = self.pixmap.width()
         height = self.pixmap.height()
-        self.ui.image_box.setPixmap(
+        self.image_box.setPixmap(
             self.pixmap.scaled(QSize(min(width, 1600), min(900, height)), Qt.KeepAspectRatio, Qt.SmoothTransformation))
         self.update_view()
