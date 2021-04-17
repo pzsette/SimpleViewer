@@ -25,11 +25,10 @@ class ImageViewer (QMainWindow):
         self.ui.load_image.clicked.connect(self.open)
         self.ui.scrollArea.setBackgroundRole(QPalette.Dark)
         self.image_box = QtWidgets.QLabel()
+        self.image_box.setStyleSheet('background-color: #202020')
         self.image_box.setAlignment(Qt.AlignCenter)
         self.ui.scrollArea.setWidget(self.image_box)
         self.ui.scrollArea.setVisible(True)
-
-        #self.ui.image_box.setStyleSheet('background-color: #202020')
 
     def left_rotate_button_clicked(self):
         transform = QTransform().rotate(-90)
@@ -65,16 +64,16 @@ class ImageViewer (QMainWindow):
     def update_view(self):
         if self.pixmap is not None:
             size = QSize(self.ui.scrollArea.width()*self.zoom_ratio-3, self.ui.scrollArea.height()*self.zoom_ratio-3)
-            self.image_box.setPixmap(
-                self.pixmap.scaled(size, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            self.image_box.setPixmap(self.pixmap.scaled(size, Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
     def open(self):
         options = QFileDialog.Options()
+        self.zoom_ratio = 1
         self.filename, _ = QFileDialog.getOpenFileName(self, 'QFileDialog.getOpenFileName()', '',
                                                   'Images (*.png *.jpeg *.jpg *.bmp *.gif)', options=options)
-        self.pixmap = QPixmap(self.filename)
-        width = self.pixmap.width()
-        height = self.pixmap.height()
-        self.image_box.setPixmap(
-            self.pixmap.scaled(QSize(min(width, 1600), min(900, height)), Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        self.update_view()
+        if self.filename:
+            self.pixmap = QPixmap(self.filename)
+            width = min(self.pixmap.width(), 1600)
+            height = min(900, self.pixmap.height())
+            self.image_box.setPixmap(self.pixmap.scaled(QSize(width, height), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            self.update_view()
