@@ -1,6 +1,5 @@
 from PIL.ExifTags import GPSTAGS
 from PyQt5.QtGui import QPixmap
-from PyQt5 import QtWidgets
 from PIL import Image as PILImage
 from PIL.ExifTags import TAGS
 from utils import convert_to_degree
@@ -10,8 +9,8 @@ class Image:
         self.__path = path
         self.__pixmap = QPixmap(self.__path)
         self.exif_data = {}
+        self.geo_data = {}
         self.get_exif_data()
-        self.geo_data = None
 
     def set_pixmap(self, pixmap):
         self.__pixmap = pixmap
@@ -25,15 +24,17 @@ class Image:
             for code in exif_code_data:
                 key_value = TAGS[code]
                 if key_value == "GPSInfo":
-                    print(exif_code_data[code][2])
-                    latitude = convert_to_degree(exif_code_data[code][2])
-                    longitude = convert_to_degree(exif_code_data[code][4])
+                    value = exif_code_data[code]
+                    for t in value:
+                        sub_decoded_data = GPSTAGS.get(t, t)
+                        self.geo_data[sub_decoded_data] = value[t]
+                    latitude = convert_to_degree(self.geo_data["GPSLatitude"])
+                    longitude = convert_to_degree(self.geo_data["GPSLongitude"])
                     self.geo_data = {
                         "Latitude": latitude,
                         "Longitude": longitude
                     }
-                    print("Latitude: {}, Longitude: {}".format(latitude, longitude))
                 else:
                     self.exif_data[key_value] = exif_code_data[code]
-#https://www.google.com/maps/search/?api=1&query=47.5951518,-122.3316393
+
 

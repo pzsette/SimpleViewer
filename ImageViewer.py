@@ -1,10 +1,10 @@
-import PyQt5
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QPixmap, QTransform, QPalette
-from PyQt5.QtWidgets import QFileDialog, QMessageBox, QMainWindow
+from PyQt5.QtGui import QTransform, QPalette
+from PyQt5.QtWidgets import QFileDialog, QMainWindow
 from mainwindow import Ui_MainWindow
 from Image import Image
+import webbrowser
 
 
 class ImageViewer (QMainWindow):
@@ -14,6 +14,7 @@ class ImageViewer (QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.info_box_is_visible = False
+        self.ui.geo_info.setEnabled(False)
         self.ui.info_box.setHeaderLabel("Exif data")
         self.image = None
         self.zoom_ratio = 1
@@ -24,6 +25,7 @@ class ImageViewer (QMainWindow):
         self.ui.zoom_out.clicked.connect(self.zoom_out_button_clicked)
         self.ui.show_info.clicked.connect(self.show_info_box)
         self.ui.load_image.clicked.connect(self.open)
+        self.ui.geo_info.clicked.connect(self.geo_info_button_clicked)
         self.ui.scrollArea.setBackgroundRole(QPalette.Dark)
         self.image_box = QtWidgets.QLabel()
         self.image_box.setStyleSheet('background-color: #202020')
@@ -53,6 +55,9 @@ class ImageViewer (QMainWindow):
 
     def geo_info_button_clicked(self):
         print("Geo info")
+        lat = self.image.geo_data["Latitude"]
+        long = self.image.geo_data["Longitude"]
+        webbrowser.open("https://www.google.com/maps/search/?api=1&query={},{}".format(lat, long))
 
     def show_info_box(self):
         self.info_box_is_visible = not self.info_box_is_visible
@@ -79,19 +84,22 @@ class ImageViewer (QMainWindow):
             self.image_box.setPixmap(self.image.get_pixmap().scaled(QSize(width, height), Qt.KeepAspectRatio, Qt.SmoothTransformation))
             self.update_view()
         self.ui.info_box.clear()
+        if self.image.geo_data:
+            self.ui.geo_info.setEnabled(True)
+        else:
+            self.ui.geo_info.setEnabled(False)
         self.add_exif_data()
 
     def add_exif_data(self):
-        if self.image.exif_data is not None:
+        if self.image.exif_data:
             for key in self.image.exif_data:
                 exif_code_item = QtWidgets.QTreeWidgetItem()
                 exif_code_item.setText(0, key)
                 self.ui.info_box.addTopLevelItem(exif_code_item)
                 exif_value_item = QtWidgets.QTreeWidgetItem()
-                exif_value_item.setText(0, str(key))
+                exif_value_item.setText(0, str(self.image.exif_data[key]))
                 exif_code_item.addChild(exif_value_item)
         else:
-            print("No exif data")
             exif_error_item = QtWidgets.QTreeWidgetItem()
             exif_error_item.setText(0, "No exif data")
             self.ui.info_box.addTopLevelItem(exif_error_item)
