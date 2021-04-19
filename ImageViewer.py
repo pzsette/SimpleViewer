@@ -5,7 +5,6 @@ from PyQt5.QtGui import QPixmap, QTransform, QPalette
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QMainWindow
 from mainwindow import Ui_MainWindow
 from Image import Image
-from PIL.ExifTags import TAGS
 
 
 class ImageViewer (QMainWindow):
@@ -82,15 +81,14 @@ class ImageViewer (QMainWindow):
         self.ui.info_box.clear()
         self.add_exif_data()
 
-    def build_exif_tree(self):
+    def add_exif_data(self):
         if self.image.exif_data is not None:
-            for exif_code in self.image.exif_data:
-                key = TAGS[exif_code]
+            for key in self.image.exif_data:
                 exif_code_item = QtWidgets.QTreeWidgetItem()
                 exif_code_item.setText(0, key)
                 self.ui.info_box.addTopLevelItem(exif_code_item)
                 exif_value_item = QtWidgets.QTreeWidgetItem()
-                exif_value_item.setText(0, str(self.image.exif_data[exif_code]))
+                exif_value_item.setText(0, str(key))
                 exif_code_item.addChild(exif_value_item)
         else:
             print("No exif data")
