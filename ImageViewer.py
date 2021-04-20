@@ -1,6 +1,6 @@
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QTransform, QPalette
+from PyQt5.QtGui import QTransform, QPalette, QIcon, QPixmap
 from PyQt5.QtWidgets import QFileDialog, QMainWindow
 from mainwindow import Ui_MainWindow
 from Image import Image
@@ -18,6 +18,13 @@ class ImageViewer (QMainWindow):
         self.ui.info_box.setHeaderLabel("Exif data")
         self.image = None
         self.zoom_ratio = 1
+        self.ui.zoom_in.setIcon(QIcon("icons/zoom-in.png"))
+        self.ui.load_image.setIcon(QIcon("icons/photo.png"))
+        self.ui.right_rotate.setIcon(QIcon("icons/rotate_right.png"))
+        self.ui.left_rotate.setIcon(QIcon("icons/rotate_left.png"))
+        self.ui.show_info.setIcon(QIcon("icons/info.png"))
+        self.ui.zoom_out.setIcon(QIcon("icons/zoom-out.png"))
+        self.ui.geo_info.setIcon(QIcon("icons/pin.png"))
         self.ui.info_box.setVisible(self.info_box_is_visible)
         self.ui.left_rotate.clicked.connect(self.left_rotate_button_clicked)
         self.ui.right_rotate.clicked.connect(self.right_rotate_button_clicked)
@@ -32,6 +39,7 @@ class ImageViewer (QMainWindow):
         self.image_box.setAlignment(Qt.AlignCenter)
         self.ui.scrollArea.setWidget(self.image_box)
         self.ui.scrollArea.setVisible(True)
+        self.switch_tool_buttons(False)
 
     def left_rotate_button_clicked(self):
         transform = QTransform().rotate(-90)
@@ -83,12 +91,13 @@ class ImageViewer (QMainWindow):
             height = min(self.image.get_pixmap().height(), 900)
             self.image_box.setPixmap(self.image.get_pixmap().scaled(QSize(width, height), Qt.KeepAspectRatio, Qt.SmoothTransformation))
             self.update_view()
-        self.ui.info_box.clear()
-        if self.image.geo_data:
-            self.ui.geo_info.setEnabled(True)
-        else:
-            self.ui.geo_info.setEnabled(False)
-        self.add_exif_data()
+            self.switch_tool_buttons(True)
+            if self.image.geo_data:
+                self.ui.geo_info.setEnabled(True)
+            else:
+                self.ui.geo_info.setEnabled(False)
+            self.ui.info_box.clear()
+            self.add_exif_data()
 
     def add_exif_data(self):
         if self.image.exif_data:
@@ -103,3 +112,10 @@ class ImageViewer (QMainWindow):
             exif_error_item = QtWidgets.QTreeWidgetItem()
             exif_error_item.setText(0, "No exif data")
             self.ui.info_box.addTopLevelItem(exif_error_item)
+
+    def switch_tool_buttons(self, bool):
+        self.ui.zoom_in.setEnabled(bool)
+        self.ui.zoom_out.setEnabled(bool)
+        self.ui.right_rotate.setEnabled(bool)
+        self.ui.left_rotate.setEnabled(bool)
+        self.ui.show_info.setEnabled(bool)

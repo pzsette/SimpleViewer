@@ -4,6 +4,7 @@ from PIL import Image as PILImage
 from PIL.ExifTags import TAGS
 from utils import convert_to_degree
 
+
 class Image:
     def __init__(self, path):
         self.__path = path
