@@ -18,24 +18,13 @@ class ImageViewer (QMainWindow):
         self.ui.info_box.setHeaderLabel("Exif data")
         self.image = None
         self.zoom_ratio = 1
-        self.ui.zoom_in.setIcon(QIcon("icons/zoom-in.png"))
-        self.ui.load_image.setIcon(QIcon("icons/photo.png"))
-        self.ui.right_rotate.setIcon(QIcon("icons/rotate_right.png"))
-        self.ui.left_rotate.setIcon(QIcon("icons/rotate_left.png"))
-        self.ui.show_info.setIcon(QIcon("icons/info.png"))
-        self.ui.zoom_out.setIcon(QIcon("icons/zoom-out.png"))
-        self.ui.geo_info.setIcon(QIcon("icons/pin.png"))
+        self.load_icon_file()
         self.ui.info_box.setVisible(self.info_box_is_visible)
-        self.ui.left_rotate.clicked.connect(self.left_rotate_button_clicked)
-        self.ui.right_rotate.clicked.connect(self.right_rotate_button_clicked)
-        self.ui.zoom_in.clicked.connect(self.zoom_in_button_clicked)
-        self.ui.zoom_out.clicked.connect(self.zoom_out_button_clicked)
-        self.ui.show_info.clicked.connect(self.show_info_box)
-        self.ui.load_image.clicked.connect(self.open)
-        self.ui.geo_info.clicked.connect(self.geo_info_button_clicked)
+        self.connect_buttons_to_functions()
         self.ui.scrollArea.setBackgroundRole(QPalette.Dark)
         self.image_box = QtWidgets.QLabel()
         self.image_box.setStyleSheet('background-color: #202020')
+        self.image_box.setMinimumWidth(512)
         self.image_box.setAlignment(Qt.AlignCenter)
         self.ui.scrollArea.setWidget(self.image_box)
         self.ui.scrollArea.setVisible(True)
@@ -112,6 +101,24 @@ class ImageViewer (QMainWindow):
             exif_error_item = QtWidgets.QTreeWidgetItem()
             exif_error_item.setText(0, "No exif data")
             self.ui.info_box.addTopLevelItem(exif_error_item)
+
+    def load_icon_file(self):
+        self.ui.zoom_in.setIcon(QIcon("icons/zoom-in.png"))
+        self.ui.load_image.setIcon(QIcon("icons/photo.png"))
+        self.ui.right_rotate.setIcon(QIcon("icons/rotate_right.png"))
+        self.ui.left_rotate.setIcon(QIcon("icons/rotate_left.png"))
+        self.ui.show_info.setIcon(QIcon("icons/info.png"))
+        self.ui.zoom_out.setIcon(QIcon("icons/zoom-out.png"))
+        self.ui.geo_info.setIcon(QIcon("icons/pin.png"))
+
+    def connect_buttons_to_functions(self):
+        self.ui.left_rotate.clicked.connect(self.left_rotate_button_clicked)
+        self.ui.right_rotate.clicked.connect(self.right_rotate_button_clicked)
+        self.ui.zoom_in.clicked.connect(self.zoom_in_button_clicked)
+        self.ui.zoom_out.clicked.connect(self.zoom_out_button_clicked)
+        self.ui.show_info.clicked.connect(self.show_info_box)
+        self.ui.load_image.clicked.connect(self.open)
+        self.ui.geo_info.clicked.connect(self.geo_info_button_clicked)
 
     def switch_tool_buttons(self, bool):
         self.ui.zoom_in.setEnabled(bool)
