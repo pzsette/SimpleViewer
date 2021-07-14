@@ -3,10 +3,16 @@
 
 Exif and image viewer built using PyQT5 framework 
 
+## Features
+- [x] Image rotation
+- [x] Image zoom
+- [x] Exif data viewer
+- [x] Geotag support
+
+## Screenshot
 <img src="screenshots/imageviewer.png" height=400/>
 
 ## Requirements
-
 Library | Version
 ------------- | -------------
 **[PyQt5](https://pypi.org/project/PyQt5/5.15.1/)**  | >= 5.15.4
