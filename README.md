@@ -27,5 +27,9 @@ git clone https://github.com/pzsette/SimpleViewer
 ```bash
 python3 main.py
 ```
+## Sample
+
+[Sample JPG image](https://raw.githubusercontent.com/pzsette/SimpleViewer/master/sample/flr.jpg) with exif and Geotag data.
+
 ## License
 MIT License. See [LICENSE](LICENSE) file for further information.
