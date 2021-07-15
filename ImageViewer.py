@@ -51,7 +51,6 @@ class ImageViewer (QMainWindow):
             self.update_view()
 
     def geo_info_button_clicked(self):
-        print("Geo info")
         lat = self.image.geo_data["Latitude"]
         long = self.image.geo_data["Longitude"]
         webbrowser.open("https://www.google.com/maps/search/?api=1&query={},{}".format(lat, long))
